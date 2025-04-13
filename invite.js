@@ -12,7 +12,9 @@ function sendInvite() {
   }
 
   const roomId = Math.random().toString(36).substring(2, 10);
-  const guestLink = `https://myedumate.live/session.html?room=${roomId}#guest`;
+  // const guestLink = `https://myedumate.live/session.html?room=${roomId}#guest`;
+  const guestLink = `https://chandrakantteotia.github.io/myedumate/session.html?room=${roomId}#guest`;
+
 
   emailjs.send("service_tqfc2an", "template_sq8nbbk", {
     room_link: guestLink,
