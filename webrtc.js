@@ -8,6 +8,8 @@ if (!roomId) {
 
 const localVideo = document.getElementById("localVideo");
 const remoteVideo = document.getElementById("remoteVideo");
+const statusText = document.getElementById("status");
+const connectingSound = document.getElementById("connecting-sound");
 
 const database = firebase.database();
 const servers = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
@@ -16,7 +18,12 @@ let localStream;
 let peerConnection = new RTCPeerConnection(servers);
 
 async function init() {
-  document.getElementById("status").innerText = "🔄 Connecting, please wait...";
+  statusText.innerText = "🔄 Connecting, please wait...";
+  try {
+    await connectingSound.play();
+  } catch (err) {
+    console.warn("Autoplay blocked by browser:", err);
+  }
 
   localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
   localVideo.srcObject = localStream;
@@ -49,7 +56,9 @@ async function init() {
       if (data && !peerConnection.currentRemoteDescription) {
         const answer = JSON.parse(data);
         await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-        document.getElementById("status").innerText = "✅ Connected!";
+        statusText.innerText = "✅ Connected!";
+        connectingSound.pause();
+        connectingSound.currentTime = 0;
       }
     });
   } else {
@@ -65,7 +74,9 @@ async function init() {
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(answer);
         await answerRef.set(JSON.stringify(answer));
-        document.getElementById("status").innerText = "✅ Connected!";
+        statusText.innerText = "✅ Connected!";
+        connectingSound.pause();
+        connectingSound.currentTime = 0;
       }
     });
   }
